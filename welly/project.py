@@ -235,12 +235,12 @@ class Project(object):
         Args:
             uwis (list): Only these UWIs. List of ``str``.
             names (list): Only these well names. List of ``str``.
-            keys (list): Only these names. List of ``str``.
-            alias (dict): Alias table, maps names to mnemomnics in order of
-                preference.
-            tests (dict): Test table, maps names to lists of functions.
-            exclude (list): Except these names. List of ``str``. Ignored if
-                you pass ``keys``.
+            keys (list): Only these curve names. List of ``str``.
+            alias (dict): Alias table, maps curve names to mnemomnics in order
+                of preference.
+            tests (dict): Test table, maps curve names to lists of functions.
+            exclude (list): Except these curve names. List of ``str``.
+                Ignored if you pass ``keys``.
             identifier (str): One of {'uwi', 'name'}. Use this property to
                 label/identify rows (wells) in the table.
             limit (int): Curve must be present in at least this many wells.
