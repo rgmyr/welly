@@ -106,7 +106,7 @@ class Project(object):
 
     @property
     def names(self):
-        return [w.header.name for w in self.__list]
+        return [w.name for w in self.__list]
 
     @property
     def uwis(self):
@@ -234,7 +234,7 @@ class Project(object):
 
         Args:
             uwis (list): Only these UWIs. List of ``str``.
-            names (list): Only these Names. List of ``str``.
+            names (list): Only these well names. List of ``str``.
             keys (list): Only these names. List of ``str``.
             alias (dict): Alias table, maps names to mnemomnics in order of
                 preference.
@@ -249,10 +249,12 @@ class Project(object):
             str. HTML representation of the table.
         """
         identifier = identifier.lower()
+        if identifier not in ['uwi', 'name']:
+            raise ValueError(f'identifier \'{identifier}\' not one of [\'uwi\', \'name\']')
+
         uwis = uwis or self.uwis
         names = names or self.names
-        wells = [w for w in self.__list if w.uwi in uwis and w.header.name]
-
+        wells = [w for w in self.__list if w.uwi in uwis and w.name in names]
 
         # This is hacky. See remark in well.get_mnemonics_from_regex().
         if exclude is not None:
@@ -272,7 +274,7 @@ class Project(object):
 
         # Make header.
         keys_ = [k+'*' if k in alias else k for k in keys]
-        r = '</th><th>'.join(['Idx', 'UWI', 'Data', 'Passing'] + keys_)
+        r = '</th><th>'.join(['Idx', identifier.upper(), 'Data', 'Passing'] + keys_)
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         # Make summary row.
@@ -328,7 +330,7 @@ class Project(object):
             else:
                 score = '{:.0f}'.format(100*(q_total/q_count)) if (q_total >= 0) and (q_count > 0) else '–'
             s = '<td>{}</td><td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td><td>{}</td>'
-            rows += s.format(i, w.uwi, count, len(w.data), score)
+            rows += s.format(i, getattr(w, identifier), count, len(w.data), score)
 
             # Make curve data columns.
             for curve in curves:

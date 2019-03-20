@@ -113,7 +113,7 @@ class Well(object):
     @property
     def name(self):
         """
-        Propert. Simply a shortcut to the Name from the header, or the
+        Property. Simply a shortcut to the name from the header, or the
         empty string if there isn't one.
         """
         return getattr(self.header, 'name', None) or ''
