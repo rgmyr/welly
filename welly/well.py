@@ -111,6 +111,14 @@ class Well(object):
         return html
 
     @property
+    def name(self):
+        """
+        Propert. Simply a shortcut to the Name from the header, or the
+        empty string if there isn't one.
+        """
+        return getattr(self.header, 'name', None) or ''
+
+    @property
     def uwi(self):
         """
         Property. Simply a shortcut to the UWI from the header, or the
@@ -222,7 +230,7 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
-            printfname (bool): prints filename before trying to load it, for 
+            printfname (bool): prints filename before trying to load it, for
                 debugging
 
         Returns:
@@ -238,7 +246,7 @@ class Well(object):
     def df(self, keys=None, basis=None, uwi=False):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
-        
+
         Everything has to have the same basis, because the depth
         is going to become the index of the DataFrame. If you don't
         provide one, ``welly`` will make one using ``survey_basis()``.
@@ -249,7 +257,7 @@ class Well(object):
             basis (array): A basis, if you want to enforce one, otherwise
                 you'll get the result of ``survey_basis()``.
             uwi (bool): Whether to add a 'UWI' column.
-    
+
         Returns:
             pandas.DataFrame.
 
@@ -290,7 +298,7 @@ class Well(object):
                     df[column] = df[column].astype(np.float64)
                 except ValueError:
                     pass
-    
+
         return df
 
     def to_lasio(self, keys=None, basis=None):
@@ -668,7 +676,7 @@ class Well(object):
             keys (list): List of strings: the keys of the data items to
                 survey, if not all of them.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-            step (float): a new step, if you want to change it.            
+            step (float): a new step, if you want to change it.
 
         Returns:
             ndarray. The most complete common basis.

@@ -105,11 +105,15 @@ class Project(object):
         return item
 
     @property
+    def names(self):
+        return [w.header.name for w in self.__list]
+
+    @property
     def uwis(self):
         return [w.uwi for w in self.__list]
 
     @classmethod
-    def from_las(cls, path=None, remap=None, funcs=None, data=True, req=None, alias=None, max=None, encoding=None, 
+    def from_las(cls, path=None, remap=None, funcs=None, data=True, req=None, alias=None, max=None, encoding=None,
                  printfname=None):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
@@ -136,7 +140,7 @@ class Project(object):
             raise WellError("You need to provide an alias dict as well as requirement list.")
         if path is None:
             path = './*.[LlAaSs]'
-        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, 
+        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs,
                                         data=data, req=req, alias=alias, encoding=encoding,
                                         printfname=printfname)
                          for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
@@ -218,29 +222,37 @@ class Project(object):
 
     def curve_table_html(self,
                          uwis=None,
+                         names=None,
                          keys=None,
                          alias=None,
                          tests=None,
                          exclude=None,
+                         identifier='uwi',
                          limit=0):
         """
         Another version of the curve table.
 
         Args:
             uwis (list): Only these UWIs. List of ``str``.
+            names (list): Only these Names. List of ``str``.
             keys (list): Only these names. List of ``str``.
             alias (dict): Alias table, maps names to mnemomnics in order of
                 preference.
             tests (dict): Test table, maps names to lists of functions.
             exclude (list): Except these names. List of ``str``. Ignored if
                 you pass ``keys``.
+            identifier (str): One of {'uwi', 'name'}. Use this property to
+                label/identify rows (wells) in the table.
             limit (int): Curve must be present in at least this many wells.
 
         Returns:
             str. HTML representation of the table.
         """
+        identifier = identifier.lower()
         uwis = uwis or self.uwis
-        wells = [w for w in self.__list if w.uwi in uwis]
+        names = names or self.names
+        wells = [w for w in self.__list if w.uwi in uwis and w.header.name]
+
 
         # This is hacky. See remark in well.get_mnemonics_from_regex().
         if exclude is not None:
@@ -385,7 +397,7 @@ class Project(object):
         Args:
             menmonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
-        
+
         Returns:
             project.
         """
@@ -398,7 +410,7 @@ class Project(object):
         Args:
             menmonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
-        
+
         Returns:
             project.
         """
@@ -410,7 +422,7 @@ class Project(object):
 
         Args:
             uwis (list): list or tuple of UWI strings.
-        
+
         Returns:
             project.
         """
@@ -422,10 +434,10 @@ class Project(object):
         """
         Returns a new project where wells with specified uwis have been omitted
 
-        Args: 
+        Args:
             uwis (list): list or tuple of UWI strings.
 
-        Returns: 
+        Returns:
             project
         """
         if uwis is None:
@@ -438,7 +450,7 @@ class Project(object):
 
         Args:
             uwi (string): the UWI string for the well.
-        
+
         Returns:
             well
         """
@@ -456,7 +468,7 @@ class Project(object):
 
         Args:
             uwi (string): the UWI string for the well.
-        
+
         Returns:
             project
         """
